@@ -237,3 +237,72 @@ callable('str');
 
 
 
+# Enum Class
+JAN = 1;
+
+from enum import Enum;
+Month = Enum('Month', ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'));
+
+for name, member in Month.__members__.items():
+    print(name, '=>', member, ',', member.value);
+
+
+from enum import Enum, unique;
+
+# @unique装饰器可以帮助我们检查保证没有重复值。
+@unique
+class Weekday(Enum):
+    Sun = 0 
+    Mon = 1
+    Tue = 2
+    Wed = 3
+    Thu = 4
+    Fri = 5
+    Sat = 6
+
+print(Weekday.Tue.value);
+# 2
+
+# hello.py
+class Hello(object):
+    def hello(self, name = "world"):
+        print("Hello, %s." % name);
+
+from hello import Hello;
+h = Hello();
+h.hello();
+print(type(Hello));
+# <class 'type'>
+print(type(h));
+# <class 'hello.Hello'>
+
+
+def fn(self, name = 'world'):
+    print("Hello, %s." % name);
+
+# Python解释器遇到class定义时，仅仅是扫描一下class定义的语法，然后调用type()函数创建出class.
+Hello = type('Hello', (object,), dict(hello = fn));
+h = Hello();
+h.hello();
+# Hello, world.
+
+
+
+# metaclass 先定义metaclass，就可以创建类，最后创建实例。
+# metaclass 是类的模板，所以从 type 类型派生
+# http://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/0014319106919344c4ef8b1e04c48778bb45796e0335839000
+class ListMetaClass(type):
+    #__new__()方法接收到的参数依次是:
+    #
+    # 1\当前准备创建的类的对象；
+    # 2\类的名字；
+    # 3\类继承的父类集合；
+    # 4\类的方法集合。
+    def __new__(cls, name, bases, attrs):
+        attrs['add'] = lambda self, value: self.append(value);
+        return type.__new__(cls, name, bases, attrs);
+
+class MyList(list, metaclass = ListMetaClass):
+    pass;
+
+
